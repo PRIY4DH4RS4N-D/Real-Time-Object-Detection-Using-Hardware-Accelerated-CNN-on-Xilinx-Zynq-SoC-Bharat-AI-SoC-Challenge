@@ -1,0 +1,107 @@
+:root {
+  --fpga-dark: #0a0a0f;
+  --fpga-darker: #050508;
+  --fpga-panel: #12121a;
+  --fpga-border: #1a1a2e;
+  --fpga-accent: #00ff88;
+  --fpga-accent-dim: #00cc6a;
+  --fpga-blue: #00d4ff;
+  --fpga-orange: #ff6b35;
+  --fpga-red: #ff3366;
+  --fpga-yellow: #ffd60a;
+  --fpga-purple: #9d4edd;
+  --fpga-text: #e0e0e0;
+  --fpga-text-dim: #808080;
+  --fpga-grid: rgba(0, 255, 136, 0.03);
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
+  background: var(--fpga-dark);
+  color: var(--fpga-text);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* Grid Pattern Background */
+body::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: 
+    linear-gradient(var(--fpga-grid) 1px, transparent 1px),
+    linear-gradient(90deg, var(--fpga-grid) 1px, transparent 1px);
+  background-size: 20px 20px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+#root {
+  position: relative;
+  z-index: 1;
+}
+
+/* Scrollbar Styling */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--fpga-darker);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--fpga-border);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--fpga-accent-dim);
+}
+
+/* Glow Effects */
+.glow-green {
+  box-shadow: 0 0 10px var(--fpga-accent), 0 0 20px rgba(0, 255, 136, 0.3);
+}
+
+.glow-blue {
+  box-shadow: 0 0 10px var(--fpga-blue), 0 0 20px rgba(0, 212, 255, 0.3);
+}
+
+.glow-orange {
+  box-shadow: 0 0 10px var(--fpga-orange), 0 0 20px rgba(255, 107, 53, 0.3);
+}
+
+/* Animations */
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+@keyframes scan {
+  0% { transform: translateY(-100%); }
+  100% { transform: translateY(100%); }
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+.pulse {
+  animation: pulse 2s ease-in-out infinite;
+}
+
+.blink {
+  animation: blink 1s step-start infinite;
+}
