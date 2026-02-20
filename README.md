@@ -21,6 +21,8 @@
 Accelerating CNN inference on FPGA fabric using Xilinx DPU, PetaLinux 2022.1, and Vitis AI 2.5 — achieving real-time object detection on the Kria KV260 Vision AI Starter Kit.
 
 ---
+## Video Link
+- 🎥 Execution Video Drive: [[Google Drive Link](https://drive.google.com/file/d/1tvb4GeSUBFum5UL2_daksO1lM1GFKyc4/view?usp=drive_link)]
 
 ## 📋 Table of Contents
 
@@ -732,12 +734,12 @@ sudo xdputil query
 <img src="proof_images/12.png" width="850"/>
 <table align="center">
   <tr>
-    <td><img src="result_images/1.png" width="840"/></td>
-    <td><img src="result_images/2.png" width="840"/></td>
+    <td><img src="result_images/1.jpeg" width="840"/></td>
+    <td><img src="result_images/2.jpeg" width="840"/></td>
   </tr>
   <tr>
-    <td><img src="result_images/4.png" width="840"/></td>
-    <td><img src="result_images/5.png" width="840"/></td>
+    <td><img src="result_images/4.jpeg" width="840"/></td>
+    <td><img src="result_images/5.jpeg" width="840"/></td>
   </tr>
 </table>
 
