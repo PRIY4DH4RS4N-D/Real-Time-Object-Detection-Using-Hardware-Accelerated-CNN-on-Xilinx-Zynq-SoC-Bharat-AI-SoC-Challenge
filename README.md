@@ -55,46 +55,107 @@ Edge AI enables intelligent processing directly on embedded systems without rely
 
 ## System Architecture
 
-```
-┌─────────────────────────────────────────────────────────────────┐
-│                    Kria KV260 SoC                               │
-│                                                                 │
-│   ┌───────────────────────┐     ┌───────────────────────────┐   │
-│   │   ARM Cortex-A53 (PS) │     │   FPGA Fabric (PL)        │   │
-│   │                       │◄───►│                           │   │
-│   │  • Image Acquisition  │     │  • Convolution Layers     │   │
-│   │  • Preprocessing      │     │  • Activation (ReLU)      │   │
-│   │  • Control Logic      │     │  • Pooling Layers         │   │
-│   │  • Post-processing    │     │  • Matrix Multiplications │   │
-│   │  • NMS / Output       │     │  • DPU (DPUCZDX8G v4.0)   │   │
-│   └───────────────────────┘     └───────────────────────────┘   │
-│                                                                 │
-│              ┌────────────────────────┐                         │
-│              │     DDR Memory         │                         │
-│              │  (Shared PS/PL Buffer) │                         │
-│              └────────────────────────┘                         │
-└─────────────────────────────────────────────────────────────────┘
+```mermaid
+flowchart TB
+    TITLE(["🟦 KRIA KV260 SoC — Zynq UltraScale+"])
+
+    subgraph KV260[" "]
+        direction TB
+
+        subgraph PS["🖥️ ARM Cortex-A53 | PS"]
+            direction LR
+            ACQ["📷 Acquisition"]
+            PRE["⚙️ Preprocess"]
+            CTRL["🎛️ Control"]
+            POST["🎯 Post-process"]
+            OUT["📤 Output"]
+            ACQ --> PRE --> CTRL --> POST --> OUT
+        end
+
+        subgraph PL["⚡ FPGA Fabric | PL"]
+            direction LR
+            CONV["🔷 Conv2D"]
+            ACT["🔶 ReLU"]
+            POOL["🔹 Pooling"]
+            DPU["🧠 DPU · INT8 · 4T"]
+            CONV --> ACT --> POOL --> DPU
+        end
+
+        CTRL <-->|"AXI4 · 128-bit"| DPU
+    end
+
+    subgraph DDR["💾 DDR | Shared Buffer"]
+        direction LR
+        BUF["📦 Feature Maps"]
+        WGT["📦 Weights"]
+        BUF --- WGT
+    end
+
+    TITLE --> KV260
+    OUT -->|"DMA Write"| BUF
+    DPU -->|"DMA Read"| WGT
+
+    style TITLE fill:#0d1533,stroke:#4F86F7,stroke-width:3px,color:#93c5fd
+    style KV260 fill:#07090f,stroke:#4F86F7,stroke-width:3px,color:#4F86F7
+    style PS    fill:#0a1a12,stroke:#06D6A0,stroke-width:2px,color:#06D6A0
+    style PL    fill:#1a080f,stroke:#EF476F,stroke-width:2px,color:#EF476F
+    style DDR   fill:#0f0f1a,stroke:#A78BFA,stroke-width:2px,color:#A78BFA
+    style ACQ   fill:#0d1f16,stroke:#059669,stroke-width:2px,color:#4ade80
+    style PRE   fill:#0d1f16,stroke:#059669,stroke-width:2px,color:#4ade80
+    style CTRL  fill:#0d1f16,stroke:#059669,stroke-width:2px,color:#4ade80
+    style POST  fill:#0d1f16,stroke:#059669,stroke-width:2px,color:#4ade80
+    style OUT   fill:#0d1f16,stroke:#059669,stroke-width:2px,color:#4ade80
+    style CONV  fill:#1f0d14,stroke:#B91C4A,stroke-width:2px,color:#fb7185
+    style ACT   fill:#1f0d14,stroke:#B91C4A,stroke-width:2px,color:#fb7185
+    style POOL  fill:#1f0d14,stroke:#B91C4A,stroke-width:2px,color:#fb7185
+    style DPU   fill:#1f0d14,stroke:#EF476F,stroke-width:3px,color:#EF476F
+    style BUF   fill:#100a1a,stroke:#7C3AED,stroke-width:2px,color:#c4b5fd
+    style WGT   fill:#100a1a,stroke:#7C3AED,stroke-width:2px,color:#c4b5fd
 ```
 
 ### CNN Inference Pipeline
+```mermaid
+flowchart LR
+    Camera(["📷 Camera / Dataset\nRaw Frames · Live Feed"])
 
-```
-[Camera / Dataset]
-        │
-        ▼
-[Preprocessing - OpenCV]    ← ARM (PS)
-  Resize + Normalize
-        │
-        ▼
-[DPU Execution]             ← FPGA (PL)
-  Conv → ReLU → Pool
-        │
-        ▼
-[Post-processing]           ← ARM (PS)
-  NMS / Classification
-        │
-        ▼
-[Output Display / Results]
+    subgraph PS["🖥️ PROCESSING SYSTEM · ARM Cortex-A9"]
+        direction TB
+        subgraph PRE_BOX["📦 Stage 1 — Preprocessing"]
+            Pre["⚙️ RESIZE + NORMALIZE\n640x640 · BGR to RGB\nOpenCV 4.x Pipeline"]
+        end
+        subgraph POST_BOX["📦 Stage 3 — Post-processing"]
+            Post["🎯 NMS / CLASSIFICATION\nConf: 0.45 · IoU: 0.50\nCOCO 80-Class Labels"]
+        end
+    end
+
+    subgraph PL["⚡ PROGRAMMABLE LOGIC · FPGA"]
+        direction TB
+        subgraph DPU_BOX["🔴 Stage 2 — DPU Accelerator"]
+            DPU["🧠 DEEP LEARNING ENGINE\nConv2D · BN · ReLU\nINT8 · 4 TOPS · Pipelined"]
+        end
+    end
+
+    Metrics["📈 METRICS\n12ms · 83 FPS\nmAP: 89.3% · 5W"]
+
+    Display(["🖥️ OUTPUT / RESULTS\nBoxes · RTSP · HDMI"])
+
+    Camera -->|"4K · 30fps"| Pre
+    Pre -->|"AXI4 · 128-bit · 400MHz"| DPU
+    DPU -->|"AXI4 Return"| Post
+    Post --> Display
+    DPU -.->|"Telemetry"| Metrics
+
+    style Camera   fill:#1a120a,stroke:#FFD166,stroke-width:3px,color:#FFD166
+    style Pre      fill:#0a1a12,stroke:#06D6A0,stroke-width:3px,color:#06D6A0
+    style DPU      fill:#1a080f,stroke:#EF476F,stroke-width:3px,color:#EF476F
+    style Post     fill:#080f1a,stroke:#0EA5E9,stroke-width:3px,color:#0EA5E9
+    style Display  fill:#100a1a,stroke:#A78BFA,stroke-width:3px,color:#A78BFA
+    style Metrics  fill:#0f0f0a,stroke:#F4D03F,stroke-width:2px,color:#F4D03F
+    style PRE_BOX  fill:#0d1f16,stroke:#059669,stroke-width:2px,color:#34d399
+    style POST_BOX fill:#071520,stroke:#0369A1,stroke-width:2px,color:#38bdf8
+    style DPU_BOX  fill:#1f0d14,stroke:#B91C4A,stroke-width:2px,color:#fb7185
+    style PS       fill:#0a0f1a,stroke:#334d80,stroke-width:3px,color:#93c5fd
+    style PL       fill:#130a0f,stroke:#7a1f3a,stroke-width:3px,color:#fda4af
 ```
 
 ---
@@ -134,16 +195,70 @@ wget "https://www.xilinx.com/bin/public/openDownload?filename=DPUCZDX8G.tar.gz" 
 ---
 
 ## Project Workflow
+```mermaid
+flowchart LR
+    subgraph HW["🔧  HARDWARE BUILD  ·  Vivado"]
+        direction TB
+        VIV["🛠️ VIVADO DESIGN SUITE\nDPU IP Core · B4096\nAXI4 Interconnect\nSynthesis + P&R"]
+        XSA["📄 XSA EXPORT\nHardware Handoff File\nPL Bitstream Metadata"]
+        BIT["⚡ BIT.BIN BITSTREAM\nFPGA Configuration\nPartial Reconfig Ready"]
+        VIV --> XSA
+        VIV --> BIT
+    end
 
-```
-┌──────────────────┐    ┌──────────────────┐    ┌──────────────────┐    ┌──────────────────┐
-│   STEP 1         │    │   STEP 2         │    │   STEP 3         │    │   STEP 4 & 5     │
-│ Hardware Design  │───►│ PetaLinux Build  │───►│ Device Tree      │───►│ Deploy & Run     │
-│ (Vivado + DPU)   │    │ (BSP + Vitis AI) │    │ Overlay          │    │ on KV260         │
-│                  │    │                  │    │                  │    │                  │
-│ Output: .xsa     │    │ Output: .wic.gz  │    │ Output: .dtbo    │    │ CNN Inference    │
-│         .bit.bin │    │                  │    │         .json    │    │ Running ✓        │
-└──────────────────┘    └──────────────────┘    └──────────────────┘    └──────────────────┘
+    subgraph LNX["🐧  LINUX IMAGE BUILD  ·  PetaLinux"]
+        direction TB
+        PET["🐧 PETALINUX + VITIS AI\nBSP · Kernel 5.15\nVART Runtime Libs\nDPU Driver Module"]
+        IMPORT["📥 IMPORT XSA\nHW Platform Config\nDevice Tree Gen"]
+        WIC["💿 WIC.GZ IMAGE\nCompressed SD Image\nRoot FS · Boot Files"]
+        PET --> IMPORT --> WIC
+    end
+
+    subgraph DT["🌳  DEVICE TREE AND OVERLAY"]
+        direction TB
+        DTS["🌿 DPU + AXI CONFIG\nDTS Source Files\nIRQ · Clock · Reset\nBase Address Map"]
+        DTBO["🗂️ DTBO OVERLAY\nRuntime Loadable\nDynamic PL Bind"]
+        JSON["📊 JSON FINGERPRINT\nDPU Architecture\nLayer Config Desc"]
+        DTS --> DTBO
+        DTS --> JSON
+    end
+
+    subgraph RUN["🚀  DEPLOY AND RUNTIME"]
+        direction TB
+        FLASH["💾 FLASH TO SD CARD\ndd / Balena Etcher\nBoot + RootFS Parts"]
+        LOAD["🔄 LOAD OVERLAY\n/lib/firmware/\nfpgautil -o .dtbo\nPL linked to PS"]
+        EXEC["✅ CNN INFERENCE LIVE\nYOLOv8 · 83 FPS\nmAP@0.5: 89.3%\nINT8 · 5W TDP"]
+        FLASH --> LOAD --> EXEC
+    end
+
+    HW -->|"Platform Handoff"| LNX
+    LNX -->|"DT Generation"| DT
+    DT -->|"Artifacts Ready"| RUN
+
+    XSA -->|"hw import"| IMPORT
+    WIC -->|"flash"| FLASH
+    DTBO -->|"overlay load"| LOAD
+
+    style HW      fill:#0a0f1a,stroke:#3B82F6,stroke-width:3px,color:#93c5fd
+    style LNX     fill:#0a1a0d,stroke:#22C55E,stroke-width:3px,color:#86efac
+    style DT      fill:#1a110a,stroke:#F97316,stroke-width:3px,color:#fdba74
+    style RUN     fill:#130a1a,stroke:#EC4899,stroke-width:3px,color:#f9a8d4
+
+    style VIV     fill:#0d1829,stroke:#3B82F6,stroke-width:2px,color:#60a5fa
+    style XSA     fill:#0d1829,stroke:#2563EB,stroke-width:2px,color:#93c5fd
+    style BIT     fill:#0d1829,stroke:#1D4ED8,stroke-width:2px,color:#bfdbfe
+
+    style PET     fill:#0d1f10,stroke:#16A34A,stroke-width:2px,color:#4ade80
+    style IMPORT  fill:#0d1f10,stroke:#15803D,stroke-width:2px,color:#86efac
+    style WIC     fill:#0d1f10,stroke:#166534,stroke-width:2px,color:#bbf7d0
+
+    style DTS     fill:#1f1509,stroke:#EA580C,stroke-width:2px,color:#fb923c
+    style DTBO    fill:#1f1509,stroke:#C2410C,stroke-width:2px,color:#fdba74
+    style JSON    fill:#1f1509,stroke:#9A3412,stroke-width:2px,color:#fed7aa
+
+    style FLASH   fill:#1a0d1f,stroke:#DB2777,stroke-width:2px,color:#f472b6
+    style LOAD    fill:#1a0d1f,stroke:#BE185D,stroke-width:2px,color:#f9a8d4
+    style EXEC    fill:#1a0d1f,stroke:#9D174D,stroke-width:2px,color:#fbcfe8
 ```
 
 ---
@@ -648,5 +763,3 @@ Inference Time (ms) — Lower is Better
 **🎉 DPU Successfully Deployed and Verified on Kria KV260!**
 
 *Built with PetaLinux 2022.1 · Vitis AI 2.5 · DPUCZDX8G v4.0*
-
-</div>
