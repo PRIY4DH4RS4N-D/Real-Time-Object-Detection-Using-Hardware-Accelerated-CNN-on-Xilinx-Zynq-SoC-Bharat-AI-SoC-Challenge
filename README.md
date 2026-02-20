@@ -48,8 +48,8 @@ Edge AI enables intelligent processing directly on embedded systems without rely
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
-│                    Kria KV260 SoC                                │
-│                                                                   │
+│                    Kria KV260 SoC                               │
+│                                                                 │
 │   ┌───────────────────────┐     ┌───────────────────────────┐   │
 │   │   ARM Cortex-A53 (PS) │     │   FPGA Fabric (PL)        │   │
 │   │                       │◄───►│                           │   │
@@ -59,11 +59,11 @@ Edge AI enables intelligent processing directly on embedded systems without rely
 │   │  • Post-processing    │     │  • Matrix Multiplications │   │
 │   │  • NMS / Output       │     │  • DPU (DPUCZDX8G v4.0)   │   │
 │   └───────────────────────┘     └───────────────────────────┘   │
-│                                                                   │
-│              ┌────────────────────────┐                          │
-│              │     DDR Memory         │                          │
-│              │  (Shared PS/PL Buffer) │                          │
-│              └────────────────────────┘                          │
+│                                                                 │
+│              ┌────────────────────────┐                         │
+│              │     DDR Memory         │                         │
+│              │  (Shared PS/PL Buffer) │                         │
+│              └────────────────────────┘                         │
 └─────────────────────────────────────────────────────────────────┘
 ```
 
