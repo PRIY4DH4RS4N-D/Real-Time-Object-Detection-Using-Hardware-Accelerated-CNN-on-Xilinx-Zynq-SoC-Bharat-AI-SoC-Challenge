@@ -1,10 +1,19 @@
-# 🚀 Real-Time Object Detection Using Hardware-Accelerated CNN on Xilinx Zynq SoC
+<!--
+██████╗ ██████╗ ██╗██████╗  █████╗ ██╗   ██╗
+██╔══██╗██╔══██╗██║██╔══██╗██╔══██╗██║   ██║
+██████╔╝██████╔╝██║██║  ██║███████║██║   ██║
+██╔═══╝ ██╔══██╗██║██║  ██║██╔══██║██║   ██║
+██║     ██║  ██║██║██████╔╝██║  ██║╚██████╔╝
+╚═╝     ╚═╝  ╚═╝╚═╝╚═════╝ ╚═╝  ╚═╝ ╚═════╝
+-->
+<div align="center">
+<img src="https://capsule-render.vercel.app/api?type=rect&color=0:00c6ff,100:0072ff&height=160&section=header&text=Real-Time%20Object%20Detection%20Using%20Hardware-Accelerated%20CNN&fontSize=26&fontAlign=50&fontAlignY=40&fontColor=ffffff&animation=fadeIn&desc=on%20Xilinx%20Zynq%20SoC%20-%20Bharath%20AI%20SOC%20Challenge&descAlign=50&descAlignY=65&descSize=22&descColor=ffffff" width="100%">
+        
+</div>
 
 [![Platform](https://img.shields.io/badge/Platform-Kria%20KV260-blue?logo=xilinx)](https://www.xilinx.com/products/som/kria/kv260-vision-starter-kit.html)
 [![PetaLinux](https://img.shields.io/badge/PetaLinux-2022.1-green)](https://www.xilinx.com/products/design-tools/embedded-software/petalinux-sdk.html)
-[![Vitis AI](https://img.shields.io/badge/Vitis%20AI-2.5-orange)](https://github.com/Xilinx/Vitis-AI)
 [![DPU](https://img.shields.io/badge/DPU-DPUCZDX8G%20v4.0-red)](https://www.xilinx.com/products/intellectual-property/dpu.html)
-[![License](https://img.shields.io/badge/License-MIT-lightgrey)](LICENSE)
 
 > **Accelerating CNN inference on FPGA fabric using Xilinx DPU, PetaLinux 2022.1, and Vitis AI 2.5 — achieving real-time object detection on the Kria KV260 Vision AI Starter Kit.**
 
