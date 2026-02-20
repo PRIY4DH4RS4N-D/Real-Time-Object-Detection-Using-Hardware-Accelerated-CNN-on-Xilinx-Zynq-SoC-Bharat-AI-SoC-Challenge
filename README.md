@@ -38,7 +38,6 @@ Accelerating CNN inference on FPGA fabric using Xilinx DPU, PetaLinux 2022.1, an
 - [Step 5: Creating and Loading the Accelerated Application](#step-5-creating-and-loading-the-accelerated-application)
 - [Results & Verification](#results--verification)
 - [Performance Summary](#performance-summary)
-- [Repository Structure](#repository-structure)
 - [References](#references)
 
 ---
@@ -848,39 +847,6 @@ Inference Time (ms) — Lower is Better
     </td>
   </tr>
 </table>
-
----
-
-## Repository Structure
-
-```
-.
-├── README.md
-├── docs/
-│   └── images/
-│       ├── fig5-2-petalinux-version.png
-│       ├── fig5-3-petalinux-create.png
-│       ├── fig5-4-hardware-directory.png
-│       ├── fig5-5-dpuczdx8g-structure.png
-│       ├── fig5-6-dtg-config.png
-│       ├── fig5-7-subsystem-config.png
-│       ├── fig5-8-kernel-dpu-driver.png
-│       └── fig5-9-petalinux-build.png
-├── scripts/
-│   ├── trd_prj.tcl           ← Vivado project config
-│   └── trd_bd.tcl            ← Block design config
-├── petalinux/
-│   └── project-spec/
-│       └── meta-user/
-│           ├── conf/
-│           │   └── user-rootfsconfig
-│           ├── recipes-kernel/
-│           ├── recipes-vitis-ai/
-│           └── recipes-apps/
-└── deployment/
-    ├── shell.json
-    └── README_deploy.md
-```
 
 ---
 
