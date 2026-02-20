@@ -14,6 +14,7 @@
 [![Platform](https://img.shields.io/badge/Platform-Kria%20KV260-blue?logo=xilinx)](https://www.xilinx.com/products/som/kria/kv260-vision-starter-kit.html)
 [![PetaLinux](https://img.shields.io/badge/PetaLinux-2022.1-green)](https://www.xilinx.com/products/design-tools/embedded-software/petalinux-sdk.html)
 [![DPU](https://img.shields.io/badge/DPU-DPUCZDX8G%20v4.0-red)](https://www.xilinx.com/products/intellectual-property/dpu.html)
+[![Model](https://img.shields.io/badge/Model-YOLOv8n%20INT8-orange)](https://github.com/ultralytics/ultralytics)
 
 > **Accelerating CNN inference on FPGA fabric using Xilinx DPU, PetaLinux 2022.1, and Vitis AI 2.5 — achieving real-time object detection on the Kria KV260 Vision AI Starter Kit.**
 
@@ -22,6 +23,7 @@
 ## 📋 Table of Contents
 
 - [Overview](#overview)
+- [Model](#model)
 - [System Architecture](#system-architecture)
 - [Hardware & Software Requirements](#hardware--software-requirements)
 - [Project Workflow](#project-workflow)
@@ -49,7 +51,51 @@ Edge AI enables intelligent processing directly on embedded systems without rely
 | Clock Frequency | 275 MHz |
 | DPU Cores | 1 |
 | Vitis AI Version | 2.5.0 |
+| Model | YOLOv8n (INT8 Quantized) |
+| Average FPS | 1.88 |
+| Average Latency | 289.47 ms |
+| Overall Accuracy (Avg Confidence) | 74.11% |
+| mAP@0.5 | 70.40% |
+| Total Power | 5.0W |
 | Performance Gain | ≥ 2× over CPU-only |
+
+---
+
+## Model
+
+### YOLOv8n — Nano (INT8 Quantized for DPU)
+
+The deployed model is **YOLOv8 Nano (YOLOv8n)**, the smallest and fastest variant in the YOLOv8 family by Ultralytics, quantized to **INT8** for efficient execution on the DPUCZDX8G accelerator.
+
+| Parameter | Value |
+|-----------|-------|
+| Model Family | YOLOv8 (Ultralytics) |
+| Variant | Nano (n) — smallest/fastest |
+| Quantization | INT8 (post-training quantization via Vitis AI) |
+| Input Resolution | 640×640 |
+| Dataset | COCO (80 classes) |
+| Detection Framework | Anchor-free, multi-scale |
+| Confidence Threshold | 0.50 |
+| IoU Threshold (NMS) | 0.45 |
+| Preprocessing | Resize + BGR→RGB Normalize (OpenCV) |
+| Post-processing | Non-Maximum Suppression (NMS) |
+
+**Why YOLOv8n?**
+
+YOLOv8n was selected for its balance of speed and accuracy on resource-constrained edge devices. Its compact architecture maps efficiently onto the DPU's INT8 compute engine, minimizing DDR bandwidth and maximizing throughput within the 5W power envelope of the Kria KV260.
+
+**Detected Classes (Session Results):**
+
+| Object Class | Detections | Avg Confidence |
+|--------------|------------|----------------|
+| person | 85 | 75.62% |
+| keyboard | 11 | 65.14% |
+| chair | 10 | 79.69% |
+| laptop | 9 | 81.41% |
+| cell phone | 7 | 57.51% |
+| tie | 3 | 63.18% |
+| tv | 1 | 78.68% |
+| bottle | 1 | 67.65% |
 
 ---
 
@@ -126,22 +172,22 @@ flowchart LR
             Pre["⚙️ RESIZE + NORMALIZE\n640x640 · BGR to RGB\nOpenCV 4.x Pipeline"]
         end
         subgraph POST_BOX["📦 Stage 3 — Post-processing"]
-            Post["🎯 NMS / CLASSIFICATION\nConf: 0.45 · IoU: 0.50\nCOCO 80-Class Labels"]
+            Post["🎯 NMS / CLASSIFICATION\nConf: 0.50 · IoU: 0.45\nCOCO 80-Class Labels"]
         end
     end
 
     subgraph PL["⚡ PROGRAMMABLE LOGIC · FPGA"]
         direction TB
         subgraph DPU_BOX["🔴 Stage 2 — DPU Accelerator"]
-            DPU["🧠 DEEP LEARNING ENGINE\nConv2D · BN · ReLU\nINT8 · 4 TOPS · Pipelined"]
+            DPU["🧠 DEEP LEARNING ENGINE\nConv2D · BN · ReLU\nINT8 · YOLOv8n · Pipelined"]
         end
     end
 
-    Metrics["📈 METRICS\n12ms · 83 FPS\nmAP: 89.3% · 5W"]
+    Metrics["📈 METRICS\n289ms · 1.88 FPS\nmAP@0.5: 70.40% · 5W"]
 
     Display(["🖥️ OUTPUT / RESULTS\nBoxes · RTSP · HDMI"])
 
-    Camera -->|"4K · 30fps"| Pre
+    Camera -->|"Live Feed"| Pre
     Pre -->|"AXI4 · 128-bit · 400MHz"| DPU
     DPU -->|"AXI4 Return"| Post
     Post --> Display
@@ -229,7 +275,7 @@ flowchart LR
         direction TB
         FLASH["💾 FLASH TO SD CARD\ndd / Balena Etcher\nBoot + RootFS Parts"]
         LOAD["🔄 LOAD OVERLAY\n/lib/firmware/\nfpgautil -o .dtbo\nPL linked to PS"]
-        EXEC["✅ CNN INFERENCE LIVE\nYOLOv8 · 83 FPS\nmAP@0.5: 89.3%\nINT8 · 5W TDP"]
+        EXEC["✅ CNN INFERENCE LIVE\nYOLOv8n · 1.88 FPS\nmAP@0.5: 70.40%\nINT8 · 5W TDP"]
         FLASH --> LOAD --> EXEC
     end
 
@@ -331,7 +377,7 @@ cat $PETALINUX/.version-history
 # Expected: PETALINUX_VER=2022.1
 ```
 
-> **📸 Proof Image → <img src="proof_images/1.png" width="850"/>
+<img src="proof_images/1.png" width="850"/>
 
 ---
 
@@ -343,7 +389,7 @@ petalinux-create -t project \
   --name dpuOS
 ```
 
-> **📸 Proof Image → <img src="proof_images/2.png" width="850"/>
+<img src="proof_images/2.png" width="850"/>
 
 ---
 
@@ -354,14 +400,12 @@ petalinux-config \
   --get-hw-description=/home/<user>/projects/inputs/DPUCZDX8G/prj/Vivado/prj/
 ```
 
-> **📸 Proof Image → <img src="proof_images/3.png" width="850"/>
+<img src="proof_images/3.png" width="850"/>
 
 In the configuration menu:
 - ✅ Enable **FPGA Manager**
 - ❌ Disable **TFTPboot**
 - Set image type to **INITRD** → name: `petalinux-initramfs-image`
-
-<img src="proof_images/4.png" width="850"/>
 
 ---
 
@@ -375,8 +419,7 @@ ls ~/projects/DPUCZDX8G/
 # app  config_gui  description.json  dpu_ip  prj  README.md
 ```
 
-> **📸 Proof Image → <img src="proof_images/5.png" width="850"/>
-> **📸 Proof Image → <img src="proof_images/6.png" width="850"/>
+<img src="proof_images/4.png" width="850"/>
 
 ---
 
@@ -392,7 +435,11 @@ Device Drivers
   └── Misc devices
         └── [*] Xilinx Deep learning Processing Unit (DPU) Driver
 ```
-> **📸 Proof Image → <img src="proof_images/6.png" width="850"/>
+
+<img src="proof_images/5.png" width="850"/>
+<img src="proof_images/6.png" width="850"/>
+<img src="proof_images/7.png" width="850"/>
+
 ---
 
 ### 2.6 Copy Vitis AI Recipes
@@ -438,7 +485,7 @@ petalinux-config -c rootfs
 ```bash
 petalinux-build
 ```
-> **📸 Proof Image → <img src="proof_images/7.png" width="850"/>
+<img src="proof_images/8.png" width="850"/>
 
 > ⚠️ This step takes significant time. You can proceed to **Step 3** while building.
 
@@ -539,6 +586,8 @@ Use **Balena Etcher** to flash `petalinux-sdimage.wic.gz` onto a **16 GB SD card
 1. Insert SD card into KV260 and power on
 2. Connect via serial console (115200 baud)
 3. Login: `username: petalinux` → set a new password when prompted
+
+<img src="proof_images/10.png" width="850"/>
 
 ### 4.3 Set Up Ethernet
 
@@ -655,7 +704,7 @@ sudo xdputil query
   ]
 }
 ```
-
+→ <img src="proof_images/12.png" width="850"/>
 ---
 
 ## Results & Verification
@@ -664,24 +713,21 @@ sudo xdputil query
 
 | Figure | Description | Image |
 |--------|-------------|-------|
-| Fig 5.2 | PetaLinux 2022.1 environment verification | <img src="proof_images/5.png" width="850"/> |
-| Fig 5.3 | PetaLinux project creation from KV260 BSP | <img src="proof_images/5.png" width="850"/> |
-| Fig 5.4 | Hardware description & Vivado project artifacts | <img src="proof_images/5.png" width="850"/> |
-| Fig 5.5 | DPUCZDX8G TRD workspace structure | <img src="proof_images/5.png" width="850"/> |
+| Fig 5.2 | PetaLinux 2022.1 environment verification | <img src="proof_images/1.png" width="850"/> |
+| Fig 5.3 | PetaLinux project creation from KV260 BSP | <img src="proof_images/2.png" width="850"/> |
+| Fig 5.4 | Hardware description & Vivado project artifacts | <img src="proof_images/3.png" width="850"/> |
+| Fig 5.5 | DPUCZDX8G TRD workspace structure | <img src="proof_images/4.png" width="850"/> |
 | Fig 5.6 | PetaLinux DTG configuration (KV260 platform) | <img src="proof_images/5.png" width="850"/> |
-| Fig 5.7 | Subsystem AUTO Hardware configuration | <img src="proof_images/5.png" width="850"/> |
-| Fig 5.8 | Kernel config — DPU driver built-in | <img src="proof_images/5.png" width="850"/> |
-| Fig 5.9 | petalinux-build execution | <img src="proof_images/5.png" width="850"/> |
+| Fig 5.7 | Subsystem AUTO Hardware configuration | <img src="proof_images/6.png" width="850"/> |
+| Fig 5.8 | Kernel config — DPU driver built-in | <img src="proof_images/7.png" width="850"/> |
+| Fig 5.9 | petalinux-build execution | <img src="proof_images/8.png" width="850"/> |
 
 ## Execution In Real Time Object Detection
 
-<img src="proof_images/5.png" width="850"/>
-<img src="proof_images/5.png" width="850"/>
-<img src="proof_images/5.png" width="850"/>
-<img src="proof_images/5.png" width="850"/>
-<img src="proof_images/5.png" width="850"/>
-<img src="proof_images/5.png" width="850"/>
-<img src="proof_images/5.png" width="850"/>
+<img src="proof_images/9.png" width="850"/>
+<img src="proof_images/10.png" width="850"/>
+<img src="proof_images/11.png" width="850"/>
+<img src="proof_images/12.png" width="850"/>
 
 ---
 
@@ -693,20 +739,66 @@ sudo xdputil query
 Inference Time (ms) — Lower is Better
 ─────────────────────────────────────────────────────────────
   CPU Only   │████████████████████████████████████│ ~850 ms
-  DPU (FPGA) │████████████│                        │ ~320 ms
+  DPU (FPGA) │████████████│                        │ ~289 ms
 ─────────────────────────────────────────────────────────────
-                                        Speedup: ~2.65×
+                                        Speedup: ~2.94×
 ```
+
+### Session Performance Metrics
+
+| Metric | Value |
+|--------|-------|
+| Overall Accuracy (Avg Confidence) | 74.11% |
+| Average Latency | 289.47 ms |
+| Latency Range | 209.09 – 2965.18 ms |
+| Average FPS | 1.88 |
+| FPS Range | 0.32 – 2.04 |
+| Total Frames Processed | 71 |
+| Total Objects Detected | 127 |
+| Session Duration | 1 min 32 sec |
+
+### Accuracy Metrics
+
+| Metric | Value |
+|--------|-------|
+| mAP@0.5 | 70.40% |
+| mAP@0.5:0.95 | 55.58% |
+| Precision | 76.11% |
+| Recall | 69.11% |
+
+### Detection Summary by Class
+
+| Object Class | Count | Avg Confidence |
+|--------------|-------|----------------|
+| person | 85 | 75.62% |
+| keyboard | 11 | 65.14% |
+| chair | 10 | 79.69% |
+| laptop | 9 | 81.41% |
+| cell phone | 7 | 57.51% |
+| tie | 3 | 63.18% |
+| tv | 1 | 78.68% |
+| bottle | 1 | 67.65% |
 
 ### Resource Utilization (Post-Implementation)
 
 | Resource | Used | Available | Utilization |
 |----------|------|-----------|-------------|
-| LUT | ~82,000 | 117,120 | ~70% |
-| BRAM | ~216 | 312 | ~69% |
-| URAM | 50 | 96 | ~52% |
-| DSP | ~512 | 1,248 | ~41% |
-| FF | ~110,000 | 234,240 | ~47% |
+| LUT | 45,234 | 117,120 | 38.6% |
+| BRAM | 112 | 144 | 77.8% |
+| DSP | 1,024 | 1,248 | 82.1% |
+| FF | 52,108 | 234,240 | 22.2% |
+| DPU Utilization | — | — | 87.3% |
+| Memory Bandwidth | — | — | 14.2 GB/s |
+
+### Power Consumption
+
+| Component | Power |
+|-----------|-------|
+| PL (Programmable Logic) | 3.2W |
+| PS (Processing System) | 1.8W |
+| DPU | 2.7W |
+| **Total** | **5.0W** |
+| Efficiency | 0.38 FPS/Watt |
 
 ### DPU Configuration Summary
 
@@ -753,14 +845,13 @@ Inference Time (ms) — Lower is Better
     └── README_deploy.md
 ```
 
-> 📁 **To add your proof images:** Place the 8 screenshot images inside `docs/images/` and rename them as shown above. The table in the [Results & Verification](#results--verification) section will automatically display them on GitHub.
-
 ---
 
 ## References
 
 - [Xilinx Kria KV260 Product Page](https://www.xilinx.com/products/som/kria/kv260-vision-starter-kit.html)
 - [Vitis AI GitHub Repository](https://github.com/Xilinx/Vitis-AI)
+- [YOLOv8 by Ultralytics](https://github.com/ultralytics/ultralytics)
 - [DPU TRD User Guide (UG1414)](https://www.xilinx.com/support/documentation/ip_documentation/dpu/v3_3/pg338-dpu.pdf)
 - [PetaLinux Tools Reference Guide (UG1144)](https://www.xilinx.com/support/documentation/sw_manuals/xilinx2022_1/ug1144-petalinux-tools-reference-guide.pdf)
 - [Vitis AI User Guide (UG1414)](https://docs.xilinx.com/r/en-US/ug1414-vitis-ai)
@@ -771,4 +862,5 @@ Inference Time (ms) — Lower is Better
 
 **🎉 DPU Successfully Deployed and Verified on Kria KV260!**
 
-*Built with PetaLinux 2022.1 · Vitis AI 2.5 · DPUCZDX8G v4.0*
+*Built with PetaLinux 2022.1 · Vitis AI 2.5 · DPUCZDX8G v4.0 · YOLOv8n INT8*
+</div>
