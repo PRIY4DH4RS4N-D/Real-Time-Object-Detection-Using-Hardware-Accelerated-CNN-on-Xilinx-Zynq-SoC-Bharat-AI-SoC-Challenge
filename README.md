@@ -728,8 +728,6 @@ sudo xdputil query
 ## Execution In Real Time Object Detection
 
 <img src="proof_images/9.png" width="850"/>
-<img src="proof_images/10.png" width="850"/>
-<img src="proof_images/11.png" width="850"/>
 <img src="proof_images/12.png" width="850"/>
 <table align="center">
   <tr>
