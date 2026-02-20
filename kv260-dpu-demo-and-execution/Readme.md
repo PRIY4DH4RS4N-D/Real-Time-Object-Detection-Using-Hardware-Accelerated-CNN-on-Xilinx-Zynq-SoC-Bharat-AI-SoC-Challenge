@@ -57,21 +57,28 @@ sudo show_dpu
 sudo xdputil query
 ```
 
+### 📷 DPU Verification Output
+![DPU Output](img/1.jpg)
+
 ---
 
 ## 🧠 Step 3: Run Object Detection
 
-Navigate to the codefiles folder and run:
+Navigate and run:
 
 ```bash
 python object_detection.py
 ```
+
+### 📷 Object Detection Output
+![Detection Output](img/2.jpg)
 
 ---
 
 ## 📂 Folder Contents
 
 - `codefiles/` → Contains Python scripts and required files  
+- `img/` → Contains output images  
 - `object_detection.py` → Main execution script  
 
 ---
