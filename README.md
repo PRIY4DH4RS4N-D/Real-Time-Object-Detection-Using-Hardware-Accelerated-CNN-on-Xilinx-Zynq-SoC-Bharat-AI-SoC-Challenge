@@ -112,8 +112,10 @@ flowchart TB
     style BUF   fill:#100a1a,stroke:#7C3AED,stroke-width:2px,color:#c4b5fd
     style WGT   fill:#100a1a,stroke:#7C3AED,stroke-width:2px,color:#c4b5fd
 ```
-
+---
 ### CNN Inference Pipeline
+---
+The CNN inference pipeline processes an input image through a hardware–software co-design system. The image is first preprocessed on the ARM processor (resize and normalization). The processed data is then sent to the FPGA-based DPU, where CNN operations like convolution, ReLU, and pooling are accelerated. After inference, the results are returned to the ARM for post-processing such as classification or NMS. Finally, the predicted output is displayed.
 ```mermaid
 flowchart LR
     Camera(["📷 Camera / Dataset\nRaw Frames · Live Feed"])
@@ -329,7 +331,7 @@ cat $PETALINUX/.version-history
 # Expected: PETALINUX_VER=2022.1
 ```
 
-> **📸 Proof Image → [`docs/images/fig5-2-petalinux-version.png`](docs/images/fig5-2-petalinux-version.png)**
+> **📸 Proof Image → <img src="proof_images/1.png" width="850"/>
 
 ---
 
@@ -341,7 +343,7 @@ petalinux-create -t project \
   --name dpuOS
 ```
 
-> **📸 Proof Image → [`docs/images/fig5-3-petalinux-create.png`](docs/images/fig5-3-petalinux-create.png)**
+> **📸 Proof Image → <img src="proof_images/2.png" width="850"/>
 
 ---
 
@@ -352,15 +354,14 @@ petalinux-config \
   --get-hw-description=/home/<user>/projects/inputs/DPUCZDX8G/prj/Vivado/prj/
 ```
 
-> **📸 Proof Image → [`docs/images/fig5-4-hardware-directory.png`](docs/images/fig5-4-hardware-directory.png)**
+> **📸 Proof Image → <img src="proof_images/3.png" width="850"/>
 
 In the configuration menu:
 - ✅ Enable **FPGA Manager**
 - ❌ Disable **TFTPboot**
 - Set image type to **INITRD** → name: `petalinux-initramfs-image`
 
-> **📸 DTG Settings → [`docs/images/fig5-6-dtg-config.png`](docs/images/fig5-6-dtg-config.png)**  
-> **📸 Subsystem Hardware Settings → [`docs/images/fig5-7-subsystem-config.png`](docs/images/fig5-7-subsystem-config.png)**
+<img src="proof_images/4.png" width="850"/>
 
 ---
 
@@ -374,7 +375,8 @@ ls ~/projects/DPUCZDX8G/
 # app  config_gui  description.json  dpu_ip  prj  README.md
 ```
 
-> **📸 Proof Image → [`docs/images/fig5-5-dpuczdx8g-structure.png`](docs/images/fig5-5-dpuczdx8g-structure.png)**
+> **📸 Proof Image → <img src="proof_images/5.png" width="850"/>
+> **📸 Proof Image → <img src="proof_images/6.png" width="850"/>
 
 ---
 
@@ -390,9 +392,7 @@ Device Drivers
   └── Misc devices
         └── [*] Xilinx Deep learning Processing Unit (DPU) Driver
 ```
-
-> **📸 Kernel Config Screenshot → [`docs/images/fig5-8-kernel-dpu-driver.png`](docs/images/fig5-8-kernel-dpu-driver.png)**
-
+> **📸 Proof Image → <img src="proof_images/6.png" width="850"/>
 ---
 
 ### 2.6 Copy Vitis AI Recipes
@@ -438,10 +438,9 @@ petalinux-config -c rootfs
 ```bash
 petalinux-build
 ```
+> **📸 Proof Image → <img src="proof_images/7.png" width="850"/>
 
 > ⚠️ This step takes significant time. You can proceed to **Step 3** while building.
-
-> **📸 Build Screenshot → [`docs/images/fig5-9-petalinux-build.png`](docs/images/fig5-9-petalinux-build.png)**
 
 ### 2.11 Package WIC Image
 
@@ -528,8 +527,8 @@ Use **Balena Etcher** to flash `petalinux-sdimage.wic.gz` onto a **16 GB SD card
 ┌─────────────────────────────────┐
 │         Balena Etcher           │
 │                                 │
-│  Source: petalinux-sdimage.wic.gz
-│  Target: /dev/sdX (16 GB SD)   │
+│ Source: petalinux-sdimage.wic.gz|
+│  Target: /dev/sdX (16 GB SD)    │
 │                                 │
 │  [ Flash! ]                     │
 └─────────────────────────────────┘
@@ -665,14 +664,24 @@ sudo xdputil query
 
 | Figure | Description | Image |
 |--------|-------------|-------|
-| Fig 5.2 | PetaLinux 2022.1 environment verification | ![Fig 5.2](docs/images/fig5-2-petalinux-version.png) |
-| Fig 5.3 | PetaLinux project creation from KV260 BSP | ![Fig 5.3](docs/images/fig5-3-petalinux-create.png) |
-| Fig 5.4 | Hardware description & Vivado project artifacts | ![Fig 5.4](docs/images/fig5-4-hardware-directory.png) |
-| Fig 5.5 | DPUCZDX8G TRD workspace structure | ![Fig 5.5](docs/images/fig5-5-dpuczdx8g-structure.png) |
-| Fig 5.6 | PetaLinux DTG configuration (KV260 platform) | ![Fig 5.6](docs/images/fig5-6-dtg-config.png) |
-| Fig 5.7 | Subsystem AUTO Hardware configuration | ![Fig 5.7](docs/images/fig5-7-subsystem-config.png) |
-| Fig 5.8 | Kernel config — DPU driver built-in | ![Fig 5.8](docs/images/fig5-8-kernel-dpu-driver.png) |
-| Fig 5.9 | petalinux-build execution | ![Fig 5.9](docs/images/fig5-9-petalinux-build.png) |
+| Fig 5.2 | PetaLinux 2022.1 environment verification | <img src="proof_images/5.png" width="850"/> |
+| Fig 5.3 | PetaLinux project creation from KV260 BSP | <img src="proof_images/5.png" width="850"/> |
+| Fig 5.4 | Hardware description & Vivado project artifacts | <img src="proof_images/5.png" width="850"/> |
+| Fig 5.5 | DPUCZDX8G TRD workspace structure | <img src="proof_images/5.png" width="850"/> |
+| Fig 5.6 | PetaLinux DTG configuration (KV260 platform) | <img src="proof_images/5.png" width="850"/> |
+| Fig 5.7 | Subsystem AUTO Hardware configuration | <img src="proof_images/5.png" width="850"/> |
+| Fig 5.8 | Kernel config — DPU driver built-in | <img src="proof_images/5.png" width="850"/> |
+| Fig 5.9 | petalinux-build execution | <img src="proof_images/5.png" width="850"/> |
+
+## Execution In Real Time Object Detection
+
+<img src="proof_images/5.png" width="850"/>
+<img src="proof_images/5.png" width="850"/>
+<img src="proof_images/5.png" width="850"/>
+<img src="proof_images/5.png" width="850"/>
+<img src="proof_images/5.png" width="850"/>
+<img src="proof_images/5.png" width="850"/>
+<img src="proof_images/5.png" width="850"/>
 
 ---
 
