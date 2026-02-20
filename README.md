@@ -746,71 +746,94 @@ Inference Time (ms) — Lower is Better
 
 ### Session Performance Metrics
 
-| Metric | Value |
-|--------|-------|
-| Overall Accuracy (Avg Confidence) | 74.11% |
-| Average Latency | 289.47 ms |
-| Latency Range | 209.09 – 2965.18 ms |
-| Average FPS | 1.88 |
-| FPS Range | 0.32 – 2.04 |
-| Total Frames Processed | 71 |
-| Total Objects Detected | 127 |
-| Session Duration | 1 min 32 sec |
-
-### Accuracy Metrics
-
-| Metric | Value |
-|--------|-------|
-| mAP@0.5 | 70.40% |
-| mAP@0.5:0.95 | 55.58% |
-| Precision | 76.11% |
-| Recall | 69.11% |
-
-### Detection Summary by Class
-
-| Object Class | Count | Avg Confidence |
-|--------------|-------|----------------|
-| person | 85 | 75.62% |
-| keyboard | 11 | 65.14% |
-| chair | 10 | 79.69% |
-| laptop | 9 | 81.41% |
-| cell phone | 7 | 57.51% |
-| tie | 3 | 63.18% |
-| tv | 1 | 78.68% |
-| bottle | 1 | 67.65% |
-
-### Resource Utilization (Post-Implementation)
-
-| Resource | Used | Available | Utilization |
-|----------|------|-----------|-------------|
-| LUT | 45,234 | 117,120 | 38.6% |
-| BRAM | 112 | 144 | 77.8% |
-| DSP | 1,024 | 1,248 | 82.1% |
-| FF | 52,108 | 234,240 | 22.2% |
-| DPU Utilization | — | — | 87.3% |
-| Memory Bandwidth | — | — | 14.2 GB/s |
-
-### Power Consumption
-
-| Component | Power |
-|-----------|-------|
-| PL (Programmable Logic) | 3.2W |
-| PS (Processing System) | 1.8W |
-| DPU | 2.7W |
-| **Total** | **5.0W** |
-| Efficiency | 0.38 FPS/Watt |
-
-### DPU Configuration Summary
-
-| Parameter | Value |
-|-----------|-------|
-| IP Version | v4.0.0 |
-| Architecture | DPUCZDX8G_ISA1_B4096 |
-| Clock | 275 MHz |
-| DPU Cores | 1 |
-| Softmax | Disabled |
-| URAM per DPU | 50 |
-| Fingerprint | 0x101000016010407 |
+<table align="center">
+  <tr>
+    <th>📊 Session Performance Metrics</th>
+    <th>🎯 Accuracy Metrics</th>
+  </tr>
+  <tr>
+    <td>
+      <table>
+        <tr><th>Metric</th><th>Value</th></tr>
+        <tr><td>Overall Accuracy (Avg Confidence)</td><td>74.11%</td></tr>
+        <tr><td>Average Latency</td><td>289.47 ms</td></tr>
+        <tr><td>Latency Range</td><td>209.09 – 2965.18 ms</td></tr>
+        <tr><td>Average FPS</td><td>1.88</td></tr>
+        <tr><td>FPS Range</td><td>0.32 – 2.04</td></tr>
+        <tr><td>Total Frames Processed</td><td>71</td></tr>
+        <tr><td>Total Objects Detected</td><td>127</td></tr>
+        <tr><td>Session Duration</td><td>1 min 32 sec</td></tr>
+      </table>
+    </td>
+    <td>
+      <table>
+        <tr><th>Metric</th><th>Value</th></tr>
+        <tr><td>mAP@0.5</td><td>70.40%</td></tr>
+        <tr><td>mAP@0.5:0.95</td><td>55.58%</td></tr>
+        <tr><td>Precision</td><td>76.11%</td></tr>
+        <tr><td>Recall</td><td>69.11%</td></tr>
+      </table>
+    </td>
+  </tr>
+  <tr>
+    <th>🧩 Detection Summary by Class</th>
+    <th>⚡ Resource Utilization (Post-Implementation)</th>
+  </tr>
+  <tr>
+    <td>
+      <table>
+        <tr><th>Object Class</th><th>Count</th><th>Avg Confidence</th></tr>
+        <tr><td>person</td><td>85</td><td>75.62%</td></tr>
+        <tr><td>keyboard</td><td>11</td><td>65.14%</td></tr>
+        <tr><td>chair</td><td>10</td><td>79.69%</td></tr>
+        <tr><td>laptop</td><td>9</td><td>81.41%</td></tr>
+        <tr><td>cell phone</td><td>7</td><td>57.51%</td></tr>
+        <tr><td>tie</td><td>3</td><td>63.18%</td></tr>
+        <tr><td>tv</td><td>1</td><td>78.68%</td></tr>
+        <tr><td>bottle</td><td>1</td><td>67.65%</td></tr>
+      </table>
+    </td>
+    <td>
+      <table>
+        <tr><th>Resource</th><th>Used</th><th>Available</th><th>Utilization</th></tr>
+        <tr><td>LUT</td><td>45,234</td><td>117,120</td><td>38.6%</td></tr>
+        <tr><td>BRAM</td><td>112</td><td>144</td><td>77.8%</td></tr>
+        <tr><td>DSP</td><td>1,024</td><td>1,248</td><td>82.1%</td></tr>
+        <tr><td>FF</td><td>52,108</td><td>234,240</td><td>22.2%</td></tr>
+        <tr><td>DPU Utilization</td><td>—</td><td>—</td><td>87.3%</td></tr>
+        <tr><td>Memory Bandwidth</td><td>—</td><td>—</td><td>14.2 GB/s</td></tr>
+      </table>
+    </td>
+  </tr>
+  <tr>
+    <th>🔋 Power Consumption</th>
+    <th>🧠 DPU Configuration Summary</th>
+  </tr>
+  <tr>
+    <td>
+      <table>
+        <tr><th>Component</th><th>Power</th></tr>
+        <tr><td>PL (Programmable Logic)</td><td>3.2W</td></tr>
+        <tr><td>PS (Processing System)</td><td>1.8W</td></tr>
+        <tr><td>DPU</td><td>2.7W</td></tr>
+        <tr><td><b>Total</b></td><td><b>5.0W</b></td></tr>
+        <tr><td>Efficiency</td><td>0.38 FPS/Watt</td></tr>
+      </table>
+    </td>
+    <td>
+      <table>
+        <tr><th>Parameter</th><th>Value</th></tr>
+        <tr><td>IP Version</td><td>v4.0.0</td></tr>
+        <tr><td>Architecture</td><td>DPUCZDX8G_ISA1_B4096</td></tr>
+        <tr><td>Clock</td><td>275 MHz</td></tr>
+        <tr><td>DPU Cores</td><td>1</td></tr>
+        <tr><td>Softmax</td><td>Disabled</td></tr>
+        <tr><td>URAM per DPU</td><td>50</td></tr>
+        <tr><td>Fingerprint</td><td>0x101000016010407</td></tr>
+      </table>
+    </td>
+  </tr>
+</table>
 
 ---
 
