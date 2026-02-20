@@ -730,6 +730,16 @@ sudo xdputil query
 <img src="proof_images/10.png" width="850"/>
 <img src="proof_images/11.png" width="850"/>
 <img src="proof_images/12.png" width="850"/>
+<table align="center">
+  <tr>
+    <td><img src="result_images/1.png" width="840"/></td>
+    <td><img src="result_images/2.png" width="840"/></td>
+  </tr>
+  <tr>
+    <td><img src="result_images/4.png" width="840"/></td>
+    <td><img src="result_images/5.png" width="840"/></td>
+  </tr>
+</table>
 
 ---
 
