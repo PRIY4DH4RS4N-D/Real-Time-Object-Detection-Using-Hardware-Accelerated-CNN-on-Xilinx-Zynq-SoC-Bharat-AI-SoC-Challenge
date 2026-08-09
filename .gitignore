@@ -1,0 +1,28 @@
+# Xilinx Vivado / Vitis / PetaLinux
+*.jou
+*.log
+*.str
+*.pb
+*.pb.*
+*.wdb
+*.wcfg
+*.dcp
+*.bit
+*.bin
+*.xsa
+*.hdf
+*.bif
+*.elf
+
+# Build Directories
+.Xil/
+.ipcache/
+hw_platform/
+images/
+build/
+components/
+project-spec/hw-description/
+
+# OS
+.DS_Store
+Thumbs.db

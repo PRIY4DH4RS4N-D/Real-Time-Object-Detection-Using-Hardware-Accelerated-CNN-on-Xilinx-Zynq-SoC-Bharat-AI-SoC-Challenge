@@ -1,0 +1,101 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 350" width="100%">
+  <defs>
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&amp;display=swap');
+      
+      text { font-family: 'JetBrains Mono', monospace; }
+      
+      .bg { fill: #020617; }
+      .tensor { fill: rgba(56, 189, 248, 0.1); stroke: #38BDF8; stroke-width: 1.5; }
+      .weight { fill: rgba(244, 63, 94, 0.1); stroke: #F43F5E; stroke-width: 1.5; }
+      .mac-grid { fill: none; stroke: #94A3B8; stroke-width: 0.5; opacity: 0.3; }
+      
+      @keyframes slideCompute {
+        0% { transform: translateX(0); opacity: 0; }
+        20% { opacity: 1; }
+        80% { opacity: 1; }
+        100% { transform: translateX(400px); opacity: 0; }
+      }
+      
+      @keyframes pulseGrid {
+        0%, 100% { opacity: 0.2; stroke: #8B5CF6; }
+        50% { opacity: 0.8; stroke: #C084FC; }
+      }
+      
+      .data-packet {
+        animation: slideCompute 3s ease-in-out infinite;
+      }
+      .data-packet-delay-1 { animation-delay: 1s; }
+      .data-packet-delay-2 { animation-delay: 2s; }
+      
+      .mac-active { animation: pulseGrid 1s infinite; }
+      .mac-active-d1 { animation: pulseGrid 1s infinite 0.33s; }
+      .mac-active-d2 { animation: pulseGrid 1s infinite 0.66s; }
+    </style>
+  </defs>
+
+  <!-- Background -->
+  <rect width="100%" height="100%" class="bg" />
+  
+  <text x="30" y="40" fill="#E879F9" font-size="16" font-weight="bold">DPU PIPELINE: INT8 MULTIPLY-ACCUMULATE (MAC) ENGINE</text>
+  <text x="30" y="60" fill="#94A3B8" font-size="12">YOLOv8n TENSOR EXECUTION @ 275 MHz (B4096 ARCHITECTURE)</text>
+
+  <!-- Pipeline Stages -->
+  <rect x="250" y="100" width="500" height="200" fill="none" stroke="#4C1D95" stroke-width="2" stroke-dasharray="5 5" />
+  
+  <text x="30" y="180" fill="#38BDF8" font-size="12" font-weight="bold">FEATURE MAP</text>
+  <text x="30" y="200" fill="#38BDF8" font-size="10">(From DDR/BRAM)</text>
+  
+  <!-- Animated Input Tensors -->
+  <g class="data-packet">
+    <rect x="100" y="170" width="40" height="40" class="tensor" />
+    <path d="M140,190 L180,190" stroke="#38BDF8" stroke-width="2" />
+  </g>
+  <g class="data-packet data-packet-delay-1">
+    <rect x="100" y="170" width="40" height="40" class="tensor" />
+    <path d="M140,190 L180,190" stroke="#38BDF8" stroke-width="2" />
+  </g>
+
+  <!-- MAC Array Box -->
+  <rect x="300" y="120" width="250" height="160" fill="#0F172A" stroke="#8B5CF6" stroke-width="2" />
+  <text x="330" y="145" fill="#C084FC" font-size="12" font-weight="bold">DSP SLICE ARRAY (MACs)</text>
+  
+  <!-- Grid of MACs inside -->
+  <g transform="translate(320, 160)">
+    <!-- Row 1 -->
+    <rect x="0" y="0" width="20" height="20" class="mac-grid mac-active" />
+    <rect x="30" y="0" width="20" height="20" class="mac-grid mac-active-d1" />
+    <rect x="60" y="0" width="20" height="20" class="mac-grid mac-active-d2" />
+    <rect x="90" y="0" width="20" height="20" class="mac-grid mac-active" />
+    <rect x="120" y="0" width="20" height="20" class="mac-grid mac-active-d1" />
+    <!-- Row 2 -->
+    <rect x="0" y="30" width="20" height="20" class="mac-grid mac-active-d2" />
+    <rect x="30" y="30" width="20" height="20" class="mac-grid mac-active" />
+    <rect x="60" y="30" width="20" height="20" class="mac-grid mac-active-d1" />
+    <rect x="90" y="30" width="20" height="20" class="mac-grid mac-active-d2" />
+    <rect x="120" y="30" width="20" height="20" class="mac-grid mac-active" />
+    <!-- Row 3 -->
+    <rect x="0" y="60" width="20" height="20" class="mac-grid mac-active-d1" />
+    <rect x="30" y="60" width="20" height="20" class="mac-grid mac-active-d2" />
+    <rect x="60" y="60" width="20" height="20" class="mac-grid mac-active" />
+    <rect x="90" y="60" width="20" height="20" class="mac-grid mac-active-d1" />
+    <rect x="120" y="60" width="20" height="20" class="mac-grid mac-active-d2" />
+    <text x="160" y="45" fill="#64748B" font-size="10">... x 4096</text>
+  </g>
+
+  <!-- Weights Input -->
+  <text x="380" y="320" fill="#F43F5E" font-size="12" font-weight="bold">INT8 WEIGHTS</text>
+  <path d="M425,300 L425,280" stroke="#F43F5E" stroke-width="2" stroke-dasharray="4 4" />
+  
+  <!-- Non-Linear Activation (ReLU) -->
+  <rect x="600" y="160" width="80" height="80" fill="#1E1B4B" stroke="#06B6D4" stroke-width="2" rx="4" />
+  <text x="615" y="205" fill="#06B6D4" font-size="12" font-weight="bold">ReLU</text>
+  <path d="M550,200 L600,200" stroke="#8B5CF6" stroke-width="3" />
+  
+  <!-- Output Feature Map -->
+  <path d="M680,200 L750,200" stroke="#06B6D4" stroke-width="3" stroke-dasharray="6 6" />
+  <rect x="750" y="170" width="50" height="60" fill="rgba(0, 255, 170, 0.1)" stroke="#00FFAA" stroke-width="2" />
+  <text x="820" y="195" fill="#00FFAA" font-size="12" font-weight="bold">OUTPUT</text>
+  <text x="820" y="215" fill="#00FFAA" font-size="10">TENSOR</text>
+
+</svg>
